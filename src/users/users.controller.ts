@@ -3,9 +3,10 @@ import { UsersService } from './users.service';
 import { CreateUserDTO } from './dto/create-user.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { User } from './users.model';
-// import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { Roles } from 'src/auth/roles-auth.decorator';
 import { RolesGuard } from 'src/auth/roles.guard';
+import { AddRoleDTO } from './dto/add-role.dto';
+import { BanUserDTO } from './dto/ban-user.dto';
 
 @ApiTags('Users')
 @Controller('users')
@@ -27,5 +28,23 @@ export class UsersController {
     @Get()
     getAll() {
         return this.usersService.getAllUsers();
+    }
+
+    @ApiOperation({ summary: 'Grant role for users' })
+    @ApiResponse({ status: 200 })
+    @Roles("ADMIN")
+    @UseGuards(RolesGuard)
+    @Post('/role')
+    addRole(@Body() addRoleDto: AddRoleDTO) {
+        return this.usersService.addRole(addRoleDto);
+    }
+
+    @ApiOperation({ summary: 'Ban users' })
+    @ApiResponse({ status: 200 })
+    @Roles("ADMIN")
+    @UseGuards(RolesGuard)
+    @Post('/ban')
+    banUser(@Body() banUserDto: BanUserDTO) {
+        return this.usersService.banUser(banUserDto);
     }
 }
